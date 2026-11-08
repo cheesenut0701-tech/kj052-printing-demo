@@ -1,0 +1,85 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KJ052 · 活字印刷动作</title><style>
+*{box-sizing:border-box}body{margin:0;background:#eef0e9;color:#193d36;font:16px/1.6 system-ui,sans-serif}main{max-width:880px;margin:auto;padding:18px}h1{font: bold 32px Georgia,serif;margin:0}p{margin:6px 0}#view{height:clamp(340px,53vh,580px);position:relative;overflow:hidden;perspective:900px;background:radial-gradient(#fffdf4,#d4e0d7);touch-action:none;cursor:grab;border-radius:10px}#world,.box{position:absolute;transform-style:preserve-3d}#world{top:50%;left:50%}.face{position:absolute;backface-visibility:hidden;border:1px solid #0002;display:grid;place-items:center;font-weight:bold}.controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:12px 0}button{background:#235548;color:white;border:0;border-radius:6px;padding:9px 15px;font:inherit;cursor:pointer}input{accent-color:#235548;width:min(37vw,300px)}small{color:#4e645c}output{font-weight:bold}</style>
+<main><h1>活字印刷机 · 压印循环</h1><p>佳奇 KJ052 · 正面压杆与双侧传动</p><div id="view" aria-label="拖动旋转印刷机模型"><div id="world"></div></div><div class="controls"><button id="play">暂停</button><label>行程 <input id="time" type="range" min="0" max="1000" value="0"></label><button id="reset">复位视角</button></div><label><input id="internals" style="width:auto" type="checkbox"> 显示推定的内部连杆</label><br><output id="stage"></output><p>拖动模型可查看背面。棕色中央压杆绕固定横轴摆动，两侧灰色齿轮随压杆转动。勾选内部连杆可观察一种能实现同样升降动作的传动布置。</p><small>照片依据：中央压杆、两侧灰色齿轮、机架侧支承和顶部横梁。小齿轮、偏心销、连杆及导向滑座按运动学推定，齿数和尺寸待实测。翻版导向轮廓待拆机确认。</small><details open><summary><strong>逐件核对 · 正面照片</strong></summary><style>table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px;border-bottom:1px solid #c5d0c8}th{background:#e0e9e0}</style><table><thead><tr><th>位置</th><th>照片所见</th><th>装配仍需核实</th></tr></thead><tbody>
+<tr><td>中央压杆左侧</td><td>灰色齿形件，部分轮缘可见</td><td>齿数、孔型、轴向定位</td></tr>
+<tr><td>中央压杆右侧</td><td>灰色齿形件，部分轮缘可见</td><td>齿数、与左件是否同轴固连</td></tr>
+<tr><td>右下侧</td><td>金色齿形件，灰色轮心</td><td>背面啮合对象、是否参与传动</td></tr>
+<tr><td>左上斜杆</td><td>杆端圆形连接位</td><td>销轴类型、插入方向与长度</td></tr>
+<tr><td>左立柱</td><td>套筒旁可见螺旋形构件</td><td>端部约束及回位功能</td></tr>
+<tr><td>顶部横杆</td><td>金色环件分列在灰色杆件上</td><td>环件厚度、间距与锁定方式</td></tr>
+<tr><td>紧固件</td><td>多个圆形端面，螺纹与杆身不可见</td><td>逐件区分积木销、轴套与螺钉后才能统计</td></tr>
+</tbody></table><p>动画中的灰轮与小轮采用 24 齿和 12 齿作演示。这两个齿数及 2∶1 传动比均未从实物测得。</p></details></main>
+<script>
+const el=id=>document.getElementById(id),world=el('world'),view=el('view');
+function box(w,h,d,color,x,y,z){const n=document.createElement('div');n.className='box';world.append(n);for(const [width,height,rx,ry,depth,light] of [[w,h,0,0,d/2,1],[w,h,0,180,d/2,.75],[d,h,0,90,w/2,.78],[d,h,0,-90,w/2,.84],[w,d,-90,0,h/2,.7],[w,d,90,0,h/2,1.14]]){let f=document.createElement('div');f.className='face';Object.assign(f.style,{width:width+'px',height:height+'px',left:-width/2+'px',top:-height/2+'px',background:color,filter:'brightness('+light+')',transform:'rotateY('+ry+'deg) rotateX('+rx+'deg) translateZ('+depth+'px)'});n.append(f)}place(n,x,y,z);return n}
+function place(n,x,y,z,a=0){n.style.transform='translate3d('+x+'px,'+y+'px,'+z+'px) rotateX('+a+'deg)'}
+box(222,16,148,'#654633',0,98,0);box(212,9,138,'#23574a',0,85.5,0);const paper=box(142,2,89,'#fffaef',0,80,9);
+for(let side of [-1,1]){box(13,185,16,'#71948a',side*90,-5,-4);box(26,21,32,'#315a4f',side*90,76,-4)}
+box(202,24,60,'#215647',0,-53,9);box(106,6,56,'#383c40',0,-38,9);
+const plate=box(104,8,54,'#815d40',0,0,0);
+const lever=box(19,13,106,'#79462f',0,0,0);
+const fixedY=-50,fixedZ=45,shaftY=-50,shaftZ=9;
+box(186,7,7,'#c6a45d',0,fixedY,fixedZ);
+box(196,7,7,'#99a09c',0,-109,0);
+for(const side of [-1,1]){
+ box(11,65,9,'#6c807b',side*90,-80,0);
+ box(11,12,55,'#60716c',side*90,fixedY,22);
+}
+const inferred=[];
+function internal(n){inferred.push(n);return n}
+function gear(x,y,z,r,count,color){
+ const rotor=document.createElement('div');rotor.className='box';world.append(rotor);
+ const face=document.createElement('div');
+ const points=[];
+ for(let tooth=0;tooth<count;tooth++)for(const [offset,radius] of [[-.5,.85],[-.32,.85],[-.19,1],[.19,1],[.32,.85]]){
+   const angle=(tooth+offset)*2*Math.PI/count;
+   points.push((50+50*radius*Math.cos(angle))+'% '+(50+50*radius*Math.sin(angle))+'%');
+ }
+ for(let layer=-3;layer<=3;layer++){
+   const disc=face.cloneNode();
+   Object.assign(disc.style,{position:'absolute',width:2*r+'px',height:2*r+'px',left:-r+'px',top:-r+'px',background:'radial-gradient(circle,#c4bda8 0 11%,#555e58 12% 21%,'+color+' 22% 65%,#626b67 66% 70%,'+color+' 71%)',clipPath:'polygon('+points.join(',')+')',transform:'translateX('+layer+'px) rotateY(90deg)'});
+   rotor.append(disc);
+ } place(rotor,x,y,z);return rotor;
+}
+const sides=[-1,1].map(side=>{
+ const x=side*22;
+ const drive=gear(x,fixedY,fixedZ,25,24,'#858b87');
+ const pinion=internal(gear(x,shaftY,shaftZ,13,12,'#c4a369'));
+ const arm=internal(box(6,6,53,'#587377',0,0,0));
+ const rod=internal(box(6,6,72,'#ad8455',0,0,0));
+ const pin=internal(box(10,8,8,'#d9ba6d',0,0,0));
+ return {x,drive,pinion,arm,rod,pin};
+});
+const slider=internal(box(146,7,7,'#9caa9e',0,0,0));
+for(const side of [-1,1]) internal(box(6,112,6,'#85958b',side*69,18,shaftZ));
+el('internals').onchange=e=>inferred.forEach(n=>n.style.visibility=e.target.checked?'visible':'hidden');inferred.forEach(n=>n.style.visibility='hidden');plate.children[5].textContent='印';plate.children[5].style.fontSize='32px';plate.children[5].style.color='#eee2c5';
+let yaw=-27,pitch=-13,phase=0,running=true,last=null,drag=null;
+function camera(){world.style.transform='scale('+Math.min(1.55,view.clientWidth/335,view.clientHeight/275)+') rotateX('+pitch+'deg) rotateY('+yaw+'deg)'}camera();onresize=camera;
+view.onpointerdown=e=>{drag=[e.clientX,e.clientY];view.setPointerCapture(e.pointerId)};view.onpointermove=e=>{if(!drag)return;yaw+=(e.clientX-drag[0])*.55;pitch=Math.max(-75,Math.min(55,pitch-(e.clientY-drag[1])*.45));drag=[e.clientX,e.clientY];camera()};view.onpointerup=view.onpointercancel=()=>drag=null;
+el('reset').onclick=()=>{yaw=-27;pitch=-13;camera()};
+function render(){
+ const u=(1-Math.cos(phase*2*Math.PI))/2;
+ const handleAngle=45-90*u;
+ const crankAngle=(90+180*u)*Math.PI/180;
+ const dy=-53*Math.sin(crankAngle),dz=53*Math.cos(crankAngle);
+ const pinY=shaftY+dy,pinZ=shaftZ+dz;
+ const lift=Math.sqrt(72*72-dz*dz);
+ const y=pinY+lift;
+ const travel=(y+31)/106;
+ const t=Math.max(0,Math.min(1,(travel-.17)/.65));
+ const rot=180*t*t*(3-2*t);
+ place(lever,0,fixedY-53*Math.sin(handleAngle*Math.PI/180),fixedZ+53*Math.cos(handleAngle*Math.PI/180),handleAngle);
+ for(const {x,drive,pinion,arm,rod,pin} of sides){
+   place(drive,x,fixedY,fixedZ,handleAngle);
+   place(pinion,x,shaftY,shaftZ,180-2*handleAngle+7.5);
+   place(arm,x,shaftY+dy/2,shaftZ+dz/2,crankAngle*180/Math.PI);
+   place(pin,x,pinY,pinZ);
+   place(rod,x,(pinY+y)/2,(pinZ+shaftZ)/2,Math.atan2(-lift,-dz)*180/Math.PI);
+ }
+ place(slider,0,y,shaftZ);place(plate,0,y,shaftZ,rot);el('stage').textContent=u<.025?'蘸墨 · 字面朝上':u>.975?'压印 · 字面贴纸':phase<.5?'下压 · 字版下降并翻面':'回程 · 字版上升复位';paper.children[5].textContent=phase>=.49?'印':'';paper.children[5].style.fontSize='32px';el('time').value=Math.round(phase*1000)}
+function tick(t){if(running&&last!==null)phase=(phase+Math.min(t-last,100)/6500)%1;last=t;render();requestAnimationFrame(tick)}requestAnimationFrame(tick);
+el('play').onclick=()=>{running=!running;el('play').textContent=running?'暂停':'播放'};el('time').oninput=e=>{running=false;el('play').textContent='播放';phase=e.target.value/1000;render()};
+</script></html>
+
+
+
